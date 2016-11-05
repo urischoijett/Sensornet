@@ -16,7 +16,7 @@ public class Sensor {
 	public void unlock(){
 		locked = false;
 	}
-	public void moveTo(int x){
+	public void moveTo(double x){
 		xpos = x;
 	}
 	public double getPos(){
