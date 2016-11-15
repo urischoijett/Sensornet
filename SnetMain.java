@@ -10,7 +10,7 @@ public class SnetMain {
 		boolean again = true;
 		
 		while (again){
-			ctrl.start(viewClass);
+			again = ctrl.start(viewClass);
 			
 		}
 

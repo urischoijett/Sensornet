@@ -4,31 +4,15 @@ import java.util.Comparator;
 public class Controller {
 
 
-/*	public Sensor[] makeSensors(userIO bob){
-		int numSensors 	= bob.getNum();
-		double rad 		= bob.getRad();
-		
-		Sensor[] sensorList = new Sensor[numSensors];
-		for (int i=0; i<numSensors; i++) {
-			double randPos =Math.random();
-			sensorList[i] = new Sensor(randPos, rad);
-		}
-		return sensorList;
-	} */
-
-	public static void start(userIO bob){
+	public static boolean start(userIO bob){
+		boolean again = true; //start again when done 
 		//start UI
 		//on GO, get info
 		//info.befirelist
 		//run algo
 		//info.afterlist
 		//update(info)
-		
-		
-		
-		
-		
-		
+
 		//requirements elicitation
 		int numSensors 	= bob.getNum();
 		double rad 		= bob.getRad();
@@ -44,14 +28,12 @@ public class Controller {
 		bob.printSensorPositions(sensorList);
 		
 		
-		
-		
 		simpleCoverage(sensorList);
 		//rigidCoverage(sensorList);
 		
 		//after
 		bob.printSensorPositions(sensorList);
-		
+		return again;
 	}
 	
 	public static void rigidCoverage (Sensor[] s){
@@ -61,8 +43,7 @@ public class Controller {
 		
 		//sort from lowest to highest xpos
 		Arrays.sort(s, new Comparator<Sensor>(){  
-			@Override
-		    public int compare(Sensor s1, Sensor s2){  
+			public int compare(Sensor s1, Sensor s2){  
 		         if (s1.getPos() < s2.getPos()) return -1;
 		         if (s1.getPos() > s2.getPos()) return 1;
 		         return 0;
@@ -102,8 +83,7 @@ public class Controller {
 		
 		//sort from lowest to highest xpos
 		Arrays.sort(s, new Comparator<Sensor>(){  
-			@Override
-		    public int compare(Sensor s1, Sensor s2){  
+			public int compare(Sensor s1, Sensor s2){  
 		         if (s1.getPos() < s2.getPos()) return -1;
 		         if (s1.getPos() > s2.getPos()) return 1;
 		         return 0;
