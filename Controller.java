@@ -2,7 +2,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class Controller {
-
+	static Sensor[] sensorList;
 
 	public static boolean start(userIO bob){
 		boolean again = true; //start again when done 
@@ -18,7 +18,7 @@ public class Controller {
 		double rad 		= bob.getRad();
 						
 		//create list of sensors and randomize positions
-		Sensor[] sensorList = new Sensor[numSensors];
+		sensorList = new Sensor[numSensors];
 		for (int i=0; i<numSensors; i++) {
 			double randPos = Math.random();
 			sensorList[i]  = new Sensor(randPos, rad);

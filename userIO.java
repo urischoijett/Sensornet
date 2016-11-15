@@ -55,29 +55,16 @@ public class userIO extends JFrame  {
 		
 		//radiustext(2,0)
 		JLabel radText = new JLabel("Radius of Sensors: ");
-		c.gridx = 3;
+		c.gridx = 2;
 		c.gridy = 0;
 		contentPane.add(radText, c);
 		
 		//radiusfield(3,0)
 		JTextField radField = new JTextField(10);
-		c.gridx = 5;
+		c.gridx = 3;
 		c.gridy = 0;
 		contentPane.add(radField, c);
 		
-		
-		//Go Button (4, 0)
-		
-		JButton goButton = new JButton("Go!");
-		goButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				goButtonHandler();
-			}	
-		});
-
-		c.gridx = 7;
-		c.gridy = 0;
-		contentPane.add(goButton, c);
 		
 		//Radio buttons (5, 0) & (5, 1)
 		JRadioButton rigidRadioButton = new JRadioButton("Rigid Coverage");
@@ -87,11 +74,12 @@ public class userIO extends JFrame  {
 		group.add(rigidRadioButton);
 		group.add(simpleRadioButton);
 
-		c.gridx = 8;
+		c.gridx = 5;
 		c.gridy = 0;
+		c.anchor  = GridBagConstraints.WEST;
 		contentPane.add(rigidRadioButton, c);
 		
-		c.gridx = 8;
+		c.gridx = 5;
 		c.gridy = 1;
 		contentPane.add(simpleRadioButton, c);
 
@@ -101,26 +89,65 @@ public class userIO extends JFrame  {
 		c.gridy = 2;
 		contentPane.add(beforeText, c);
 		
+		
 		//demobar1(0,3)
+		SensorPanel beforePanel = new SensorPanel(ctrl.sensorList);
+		Dimension d = new Dimension(this.getWidth(), this.getHeight());
+		beforePanel.setSize(d);
+		c.gridx = 0;
+		c.gridy = 3;
+		c.gridwidth = 5;
+		c.gridheight = 1;
+		c.weighty = 1;
+		c.fill = 1;
+		//c.gridwidth = 7;
+		//c.gridheight = 2;
+		contentPane.add(beforePanel, c);
+		
 		//bar2text(1,4)
 		JLabel afterText = new JLabel("After:");
 		c.gridx = 0;
 		c.gridy = 4;
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.weighty = 0;
 		contentPane.add(afterText, c);
 		
 		//demobar2(0,5)
-		Box afterBox = Box.createHorizontalBox();
-		afterBox.setBorder(BorderFactory.createLineBorder(Color.black));
+		SensorPanel afterPanel = new SensorPanel(ctrl.sensorList);
+		afterPanel.setSize(d);
 		c.gridx = 0;
 		c.gridy = 5;
 		c.gridwidth = 5;
-		contentPane.add(afterBox, c);
-	
+		c.gridheight = 1;
+		c.weighty = 1;
+		c.fill = 1;
+		//c.gridwidth = 7;
+		//c.gridheight = 2;
+		contentPane.add(afterPanel, c);
+		
+		
+		//Go Button (4, 0)
+		JButton goButton = new JButton("Go!");
+		goButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				goButtonHandler(numField.getText().trim(), radField.getText().trim(), rigidRadioButton.isSelected(), beforePanel, afterPanel);
+			}	
+		});
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.weighty = 0;
+		c.fill = 0;
+		c.gridx = 4;
+		c.gridy = 0;
+		contentPane.add(goButton, c);
 		setVisible(true);	
 	}
 	
 	public void goButtonHandler(){
 		//get radio selection
+		//displayNet(ctrl.sensorList);
+			
 	}
 	
 	
@@ -158,7 +185,15 @@ public class userIO extends JFrame  {
 	}
 
 	public void displayNet(Sensor[] s){
+		GridBagConstraints c = new GridBagConstraints();
 		
+		SensorPanel beforePanel = new SensorPanel(s);
+		
+		c.gridx = 0;
+		c.gridy = 3;
+		c.gridwidth = 7;
+		c.gridheight = 2;
+		contentPane.add(beforePanel, c);
 	}
 
 	public void printSensorPositions(Sensor[]s){
