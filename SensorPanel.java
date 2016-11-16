@@ -11,13 +11,13 @@ public class SensorPanel extends JPanel{
 	int w = this.getWidth();
 	int h = this.getHeight();
 	
-	public SensorPanel(Sensor[] s){
+	public SensorPanel(){
 		//this.setLayout(new GridLayout());
-		list = s;
-		this.setBackground(Color.BLACK);
+		//this.setBackground(Color.GRAY);
 		setVisible(true);
 	}
 	
+	//draw horizontal line
 	public void paint(Graphics g){
 		super.paint(g);
 		//draw base line

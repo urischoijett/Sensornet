@@ -3,20 +3,9 @@ import java.util.Comparator;
 
 public class Controller {
 	static Sensor[] sensorList;
+	
+	public Sensor[] createList(int numSensors, double rad){
 
-	public static boolean start(userIO bob){
-		boolean again = true; //start again when done 
-		//start UI
-		//on GO, get info
-		//info.befirelist
-		//run algo
-		//info.afterlist
-		//update(info)
-
-		//requirements elicitation
-		int numSensors 	= bob.getNum();
-		double rad 		= bob.getRad();
-						
 		//create list of sensors and randomize positions
 		sensorList = new Sensor[numSensors];
 		for (int i=0; i<numSensors; i++) {
@@ -24,19 +13,10 @@ public class Controller {
 			sensorList[i]  = new Sensor(randPos, rad);
 		}
 		
-		//before
-		bob.printSensorPositions(sensorList);
-		
-		
-		simpleCoverage(sensorList);
-		//rigidCoverage(sensorList);
-		
-		//after
-		bob.printSensorPositions(sensorList);
-		return again;
+		return sensorList;
 	}
 	
-	public static void rigidCoverage (Sensor[] s){
+	public void rigidCoverage (Sensor[] s){
 		double movement 	= 0; 			//total movement
 		double radius 		= s[0].getRad();
 		double newPos		= 0;		
@@ -74,8 +54,7 @@ public class Controller {
 	}
 	
 	
-	
-	public static void simpleCoverage (Sensor[] s){
+	public void simpleCoverage (Sensor[] s){
 		//finds and moves the closest sensors possible needed to achieve total coverage ignoring overlap.
 		double movement 	= 0; 			//total movement
 		double radius 		= s[0].getRad();
@@ -137,7 +116,7 @@ public class Controller {
 	
 	
 	//helper 1
-	public static int getRightinRange(Sensor[] s, double x, double y) {
+	public int getRightinRange(Sensor[] s, double x, double y) {
 		int result 		= -1;
 		double pos		=  0;
 		
@@ -152,7 +131,7 @@ public class Controller {
 	}
 	
 	//helper 2
-	public static int getClosestUnlocked(Sensor[] s, double x) {
+	public int getClosestUnlocked(Sensor[] s, double x) {
 		int winner 	= -1;
 		double minD =  1;
 		double d	=  1;
@@ -169,6 +148,4 @@ public class Controller {
 	}
 	
 	
-	
-
 }

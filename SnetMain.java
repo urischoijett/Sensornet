@@ -7,12 +7,6 @@ public class SnetMain {
 		
 		Controller ctrl = new Controller();
 		userIO viewClass = new userIO(ctrl);	
-		boolean again = true;
-		
-		while (again){
-			again = ctrl.start(viewClass);
-			
-		}
 
 	}
 }

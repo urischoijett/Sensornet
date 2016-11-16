@@ -92,7 +92,7 @@ public class userIO extends JFrame  {
 		
 		
 		//demobar1(0,3)
-		SensorPanel beforePanel = new SensorPanel(ctrl.sensorList);
+		SensorPanel beforePanel = new SensorPanel();
 		Dimension d = new Dimension(this.getWidth(), this.getHeight());
 		beforePanel.setSize(d);
 		c.gridx = 0;
@@ -115,7 +115,7 @@ public class userIO extends JFrame  {
 		contentPane.add(afterText, c);
 		
 		//demobar2(0,5)
-		SensorPanel afterPanel = new SensorPanel(ctrl.sensorList);
+		SensorPanel afterPanel = new SensorPanel();
 		afterPanel.setSize(d);
 		c.gridx = 0;
 		c.gridy = 5;
@@ -145,38 +145,34 @@ public class userIO extends JFrame  {
 		setVisible(true);	
 	}
 	
-	public void goButtonHandler(String numSensorsString, String radiusString, boolean rigidCoverage, JPanel bPanel, JPanel aPanel){
-		//get radio selection
-		//displayNet(ctrl.sensorList);
-		
-		//error handling for user input 
-		int numSensors; 
-		int radius;
-		try 
-		{
-			numSensors = Integer.parseInt(numSensorsString);
-			radius = Integer.parseInt(radiusString);
-		}
-		catch(NumberFormatException e) {
-			numSensors = -1;
-			radius = -1;
-		};
-		
-		if (radius == -1 || numSensors == -1) {
-			String errorMessage = "Please enter a valid integer for both the radius and the number of sensors";
-			JOptionPane.showMessageDialog(null, errorMessage, "Number format error", JOptionPane.INFORMATION_MESSAGE);
-			return;
-		}
-		
-		if (rigidCoverage) {
-			
-		} else { // simple coverage
-			 
-		}
-			
-	}
-	
-	
+	 public void goButtonHandler(String numSensorsString, String radiusString, boolean rigidCoverage, JPanel bPanel, JPanel aPanel){
+		  //get radio selection
+		  //displayNet(ctrl.sensorList);
+		  
+		  //error handling for user input 
+		  int numSensors; 
+		  double radius;
+		  Sensor[] sList;
+		  try {
+			  numSensors = Integer.parseInt(numSensorsString);
+			  radius = Double.parseDouble(radiusString);
+		  }
+		  catch(NumberFormatException e) {
+			  String errorMessage = "Please enter a valid number for both the radius and the number of sensors";
+			  JOptionPane.showMessageDialog(null, errorMessage, "Number format error", JOptionPane.INFORMATION_MESSAGE);
+			  return;
+		  }
+		  
+		  sList = ctrl.createList(numSensors, radius);
+		  //bPanel.display(sList);
+		  
+		  if (rigidCoverage) {
+			  ctrl.rigidCoverage(sList);		  
+		  } else { // simple coverage
+			  ctrl.simpleCoverage(sList);
+		  }
+		//aPanel.display(sList);
+		 }
 	
 	
 	
@@ -213,15 +209,7 @@ public class userIO extends JFrame  {
 	}
 
 	public void displayNet(Sensor[] s){
-		GridBagConstraints c = new GridBagConstraints();
-		
-		SensorPanel beforePanel = new SensorPanel(s);
-		
-		c.gridx = 0;
-		c.gridy = 3;
-		c.gridwidth = 7;
-		c.gridheight = 2;
-		contentPane.add(beforePanel, c);
+
 	}
 
 	public void printSensorPositions(Sensor[]s){
