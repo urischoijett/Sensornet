@@ -4,12 +4,12 @@ import java.util.Comparator;
 public class Controller {
 	static Sensor[] sensorList;
 	
-	public Sensor[] createList(int numSensors, double rad){
+	public Sensor[] createList(int numSensors, Float rad){
 
 		//create list of sensors and randomize positions
 		sensorList = new Sensor[numSensors];
 		for (int i=0; i<numSensors; i++) {
-			double randPos = Math.random();
+			float randPos = (float) Math.random();
 			sensorList[i]  = new Sensor(randPos, rad);
 		}
 		
@@ -17,9 +17,9 @@ public class Controller {
 	}
 	
 	public void rigidCoverage (Sensor[] s){
-		double movement 	= 0; 			//total movement
-		double radius 		= s[0].getRad();
-		double newPos		= 0;		
+		float movement 	= 0; 			//total movement
+		float radius 	= s[0].getRad();
+		float newPos	= 0;		
 		
 		//sort from lowest to highest xpos
 		Arrays.sort(s, new Comparator<Sensor>(){  
@@ -35,7 +35,7 @@ public class Controller {
 
 		for(int i=0; i<s.length; i++) {
 			
-			newPos = (radius * (2*(double)i+1));
+			newPos = (radius * (2*(float)i+1));
 			movement+= Math.abs(s[i].getPos() - newPos);
 			
 			System.out.println(s[i].getPos() + ", ");
@@ -56,10 +56,10 @@ public class Controller {
 	
 	public void simpleCoverage (Sensor[] s){
 		//finds and moves the closest sensors possible needed to achieve total coverage ignoring overlap.
-		double movement 	= 0; 			//total movement
-		double radius 		= s[0].getRad();
-		double newPos		= 0;		
-		
+		float movement 		= 0; 			//total movement
+		float radius 		= s[0].getRad();
+		float newPos		= 0;		
+		int lockedCount		= 0;
 		//sort from lowest to highest xpos
 		Arrays.sort(s, new Comparator<Sensor>(){  
 			public int compare(Sensor s1, Sensor s2){  
@@ -84,12 +84,8 @@ public class Controller {
 			System.out.println("pos "+i+": " + s[i].getPos());
 		}
 		
-		while (s[current].getPos()<(1-radius)){
-			if(s[s.length-1].isLocked()){
-				System.out.println("I'M LOCKED");
-				break;
-			}
-			
+		while (s[current].getPos()<=(1-radius)){
+						
 			//find farthest right within 2R 
 			next = getRightinRange(s, s[current].getPos(), s[current].getPos()+(2*radius));
 			
@@ -98,12 +94,19 @@ public class Controller {
 			if (next > -1){
 				s[next].lock();
 				
+				
 			} else {	//if none, getClosestUnlocked to current.xpos+2r
-				next = getClosestUnlocked(s, s[current].getPos()+(2*radius));
-				s[next].moveTo(s[current].getPos()+(2*radius));
-				s[next].lock();
-				movement+= Math.abs(s[next].getPos() - s[current].getPos());
+				newPos = s[current].getPos()+(2*radius);
+				if (newPos>1){ newPos = 1-radius; }
+				next = getClosestUnlocked(s, newPos);
+					if (next == -1){
+						break;
+					}
+				movement+= Math.abs(s[next].getPos() - newPos);
+				s[next].moveTo(newPos);
+				s[next].lock();	
 			}
+			
 			System.out.println("current: " + s[current].getPos());
 			System.out.println("  next: " + s[next].getPos()+ "\n");
 			current = next;
@@ -116,9 +119,9 @@ public class Controller {
 	
 	
 	//helper 1
-	public int getRightinRange(Sensor[] s, double x, double y) {
+	public int getRightinRange(Sensor[] s, float x, float y) {
 		int result 		= -1;
-		double pos		=  0;
+		float pos		=  0;
 		
 		for (int i=0; i<s.length; i++){
 			pos = s[i].getPos();
@@ -131,14 +134,14 @@ public class Controller {
 	}
 	
 	//helper 2
-	public int getClosestUnlocked(Sensor[] s, double x) {
+	public int getClosestUnlocked(Sensor[] s, float x) {
 		int winner 	= -1;
-		double minD =  1;
-		double d	=  1;
+		float minD 	=  1;
+		float d		=  1;
 		
 		for (int i=0; i<s.length; i++){
 			d = Math.abs(s[i].getPos() - x);
-			if (d < minD){
+			if (d < minD && !s[i].isLocked()){ //is closer and unlocked
 				minD = d;
 				winner = i;
 			}

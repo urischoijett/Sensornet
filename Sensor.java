@@ -1,11 +1,12 @@
 
 public class Sensor {
 	
-	private double 	xpos;
-	private double 	radius;
+	private float 	xpos;
+	private float 	radius;
 	private boolean locked = false;
+	private boolean moved = false;
 	
-	Sensor(double x, double r){
+	Sensor(float x, float r){
 		xpos 	= x;
 		radius 	= r;
 	}
@@ -16,19 +17,23 @@ public class Sensor {
 	public void unlock(){
 		locked = false;
 	}
-	public void moveTo(double x){
+	public void moveTo(float x){
 		xpos = x;
+		moved = true;
 	}
-	public double getPos(){
+	public float getPos(){
 		return xpos;
 	}
-	public double getRad(){
+	public float getRad(){
 		return radius;
 	}
-	public void setPos(double newPos){
+	public void setPos(float newPos){
 		xpos = newPos;
+		moved = true;
 	}
-	
+	public boolean wasMoved(){
+		return moved;
+	}
 	public boolean isLocked(){
 		return locked;
 	}

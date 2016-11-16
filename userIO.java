@@ -32,8 +32,8 @@ public class userIO extends JFrame  {
 	//constructor
 	public userIO(Controller control){
 		ctrl = control;
-		setResizable(true);
-		setSize(new Dimension(800, 720));	
+		setResizable(false);
+		setSize(new Dimension(800, 600));	
 //		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		
 		//gridbag start
@@ -93,16 +93,13 @@ public class userIO extends JFrame  {
 		
 		//demobar1(0,3)
 		SensorPanel beforePanel = new SensorPanel();
-		Dimension d = new Dimension(this.getWidth(), this.getHeight());
-		beforePanel.setSize(d);
+		
 		c.gridx = 0;
 		c.gridy = 3;
 		c.gridwidth = 5;
 		c.gridheight = 1;
 		c.weighty = 1;
 		c.fill = 1;
-		//c.gridwidth = 7;
-		//c.gridheight = 2;
 		contentPane.add(beforePanel, c);
 		
 		//bar2text(1,4)
@@ -116,15 +113,13 @@ public class userIO extends JFrame  {
 		
 		//demobar2(0,5)
 		SensorPanel afterPanel = new SensorPanel();
-		afterPanel.setSize(d);
+		
 		c.gridx = 0;
 		c.gridy = 5;
 		c.gridwidth = 5;
 		c.gridheight = 1;
 		c.weighty = 1;
 		c.fill = 1;
-		//c.gridwidth = 7;
-		//c.gridheight = 2;
 		contentPane.add(afterPanel, c);
 		
 		
@@ -145,34 +140,39 @@ public class userIO extends JFrame  {
 		setVisible(true);	
 	}
 	
-	 public void goButtonHandler(String numSensorsString, String radiusString, boolean rigidCoverage, JPanel bPanel, JPanel aPanel){
-		  //get radio selection
-		  //displayNet(ctrl.sensorList);
+	 public void goButtonHandler(String numSensorsString, String radiusString, boolean rigidCoverage, SensorPanel bPanel, SensorPanel aPanel){
+		  int numSensors; 
+		  float radius;
+		  Sensor[] sList;
+			 
+		  bPanel.clearSensors();
+		  aPanel.clearSensors();
 		  
 		  //error handling for user input 
-		  int numSensors; 
-		  double radius;
-		  Sensor[] sList;
 		  try {
 			  numSensors = Integer.parseInt(numSensorsString);
-			  radius = Double.parseDouble(radiusString);
+			  radius = Float.parseFloat(radiusString);
 		  }
 		  catch(NumberFormatException e) {
 			  String errorMessage = "Please enter a valid number for both the radius and the number of sensors";
 			  JOptionPane.showMessageDialog(null, errorMessage, "Number format error", JOptionPane.INFORMATION_MESSAGE);
 			  return;
 		  }
-		  
+
+		  //create sensors
 		  sList = ctrl.createList(numSensors, radius);
-		  //bPanel.display(sList);
 		  
+		  //display initial positions
+		  bPanel.displaySensors(sList);
+		  
+		  //display final positions
 		  if (rigidCoverage) {
 			  ctrl.rigidCoverage(sList);		  
 		  } else { // simple coverage
 			  ctrl.simpleCoverage(sList);
 		  }
-		//aPanel.display(sList);
-		 }
+		  aPanel.displaySensors(sList);
+	 }
 	
 	
 	
@@ -193,16 +193,16 @@ public class userIO extends JFrame  {
 		return n;
 	}
 	
-	public double getRad(){
-		double r 	= -1;
+	public float getRad(){
+		float r 	= -1;
 		//Scanner inputs = new Scanner(System.in);
 		
 		System.out.println("How much radius?(0<r<1)");
-		r = inputs.nextDouble();
+		r = inputs.nextFloat();
 		
 		while (r <= 0 || r >= 1){
 			System.out.println("try again, idiot");
-			r = inputs.nextDouble();
+			r = inputs.nextFloat();
 		}
 		//inputs.close();
 		return r;
