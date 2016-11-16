@@ -14,6 +14,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -144,11 +145,38 @@ public class userIO extends JFrame  {
 		setVisible(true);	
 	}
 	
-	public void goButtonHandler(){
+	public void goButtonHandler(String numSensorsString, String radiusString, boolean rigidCoverage, JPanel bPanel, JPanel aPanel){
 		//get radio selection
 		//displayNet(ctrl.sensorList);
+		
+		//error handling for user input 
+		int numSensors; 
+		int radius;
+		try 
+		{
+			numSensors = Integer.parseInt(numSensorsString);
+			radius = Integer.parseInt(radiusString);
+		}
+		catch(NumberFormatException e) {
+			numSensors = -1;
+			radius = -1;
+		};
+		
+		if (radius == -1 || numSensors == -1) {
+			String errorMessage = "Please enter a valid integer for both the radius and the number of sensors";
+			JOptionPane.showMessageDialog(null, errorMessage, "Number format error", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		
+		if (rigidCoverage) {
+			
+		} else { // simple coverage
+			 
+		}
 			
 	}
+	
+	
 	
 	
 	
