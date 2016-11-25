@@ -15,12 +15,12 @@ public class SensorPanel extends JPanel{
 	public SensorPanel(){
 		//this.setBackground(Color.DARK_GRAY);
 		setVisible(true);
+		//this.setBorder(BorderFactory.createLoweredBevelBorder());
 		this.setBorder(BorderFactory.createBevelBorder(1, Color.BLACK, Color.BLACK));
 		
 		
 	}
 	
-	//draw horizontal line
 	public void paint(Graphics g){
 		super.paint(g);
 		//draw base line
@@ -29,16 +29,15 @@ public class SensorPanel extends JPanel{
 		Line2D mainLine = new Line2D.Float(0, this.getHeight()/2, this.getWidth(), this.getHeight()/2); 
 		g2.draw(mainLine);
 		
-		Line2D notch1 = new Line2D.Float(this.getWidth()/2, this.getHeight()/2-3, this.getWidth()/2, this.getHeight()/2+3); 
+		//notches
+		Line2D notch1 = new Line2D.Float(this.getWidth()/4, this.getHeight()/2-3, this.getWidth()/4, this.getHeight()/2+3); 
 		g2.draw(notch1);
-		
-		Line2D notch2 = new Line2D.Float(this.getWidth()/4, this.getHeight()/2-3, this.getWidth()/4, this.getHeight()/2+3); 
+		Line2D notch2 = new Line2D.Float(this.getWidth()/2, this.getHeight()/2-3, this.getWidth()/2, this.getHeight()/2+3); 
 		g2.draw(notch2);
-		
 		Line2D notch3 = new Line2D.Float(this.getWidth()*3/4, this.getHeight()/2-3, this.getWidth()*3/4, this.getHeight()/2+3); 
 		g2.draw(notch3);
 		
-		//add some line labels
+		//line labels
 		g2.drawString("0", 		3, 						this.getHeight()/2+15);
 		g2.drawString("0.5", 	this.getWidth()/2-8, 	this.getHeight()/2+15);
 		g2.drawString("1", 		this.getWidth()-10, 	this.getHeight()/2+15);

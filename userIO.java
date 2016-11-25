@@ -145,15 +145,16 @@ public class userIO extends JFrame  {
 		contentPane.add(afterPanel, c);
 		
 		//movement label (1,6)
-		JLabel movementText = new JLabel("Total Movement:");
+		final JLabel movementText = new JLabel("");
 		c.gridx = 1;
 		c.gridy = 6;
 		c.gridwidth = 1;
 		c.gridheight = 1;
 		c.weighty = 0.2;
+		movementText.setVisible(false);
 		contentPane.add(movementText, c);
 		
-		//movement label (1,6)
+		//movementtotal label (2,6)
 		final JLabel movementTotal = new JLabel("");
 		c.gridx = 2;
 		c.gridy = 6;
@@ -167,11 +168,16 @@ public class userIO extends JFrame  {
 		JButton goButton = new JButton("Go!");
 		goButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
+				beforePanel.clearSensors();
+				afterPanel.clearSensors();
 				if(singleRadioButton.isSelected()){
+					movementText.setText("Total Movement:");
 					singleModeHandler(numField.getText().trim(), radField.getText().trim(), rigidRadioButton.isSelected(), beforePanel, afterPanel, movementTotal);
 				} else {
-					multiModeHandler();
+					movementText.setText("Average Movement:");
+					multiModeHandler(numField.getText().trim(), radField.getText().trim(),trialField.getText(), rigidRadioButton.isSelected(), movementTotal);
 				}
+				movementText.setVisible(true);
 			}	
 		});
 		c.gridwidth = 1;
@@ -189,6 +195,8 @@ public class userIO extends JFrame  {
 				numField.setText("");
 				radField.setText("");
 				trialField.setText("");
+				movementText.setVisible(false);
+				movementTotal.setText("");
 				beforePanel.clearSensors();
 				afterPanel.clearSensors();
 				
@@ -214,9 +222,6 @@ public class userIO extends JFrame  {
 		  float radius;
 		  Sensor[] sList;
 		  float movement;
-			 
-		  bPanel.clearSensors();
-		  aPanel.clearSensors();
 		  
 		  //error handling for user input 
 		  try {
@@ -243,8 +248,26 @@ public class userIO extends JFrame  {
 	 }
 	
 	//go button handler for multi trial
-	private void multiModeHandler(){
+	private void multiModeHandler(String numSensorsString, String radiusString, String trialString, boolean rigidCoverage, JLabel moveText){
+		int 	numSensors; 
+		float 	radius;
+		int 	numTrials;
+		float	movement;
 		
+		try {
+			  numSensors 	= Integer.parseInt(numSensorsString);
+			  radius 		= Float.parseFloat(radiusString);
+			  numTrials		= Integer.parseInt(trialString);
+		}
+		catch(NumberFormatException e) {
+			  String errorMessage = "Please enter a valid number for both the radius and the number of sensors";
+			  JOptionPane.showMessageDialog(null, errorMessage, "Number format error", JOptionPane.INFORMATION_MESSAGE);
+			  return;
+		}
+		 						
+		movement = ctrl.trials(numSensors, radius, numTrials, rigidCoverage);
+		moveText.setText(""+movement);
+
 	}
 	
 	/*
