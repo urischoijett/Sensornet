@@ -4,7 +4,7 @@ import java.util.Comparator;
 public class Controller {
 	static Sensor[] sensorList;
 	
-	public Sensor[] createList(int numSensors, Float rad){
+	public Sensor[] createList(int numSensors, float rad){
 
 		//create list of sensors and randomize positions
 		sensorList = new Sensor[numSensors];
@@ -46,8 +46,7 @@ public class Controller {
 		System.out.println("Total Movement: "+ movement);
 		return movement;
 	}
-	
-	
+		
 	public float simpleCoverage (Sensor[] s){
 		//finds and moves the closest sensors possible needed to achieve total coverage ignoring overlap.
 		float movement 	= 0; 			//total movement (return)
@@ -74,8 +73,7 @@ public class Controller {
 					newPos = 1-radius;
 				}
 				next = getClosestUnlocked(s, newPos);
-				
-					if (next == -1){ 	//are we out of sensors?
+				if (next == -1){ 		//are we out of sensors?
 						break;
 					}
 					
@@ -91,6 +89,20 @@ public class Controller {
 	
 	}
 	
+	public float trials (int numSensors, float rad, int numTrials, boolean rigid){
+		float totalMovement =0;
+		Sensor[] sList;
+		
+		for (int i=0; i<numTrials; i++){
+			sList = createList(numSensors, rad);
+			if (rigid){
+				totalMovement += rigidCoverage(sList);
+			} else {
+				totalMovement += simpleCoverage(sList);
+			}
+		}		
+		return (totalMovement/numTrials);
+	}
 	
 	//helper 1
 	public int getRightinRange(Sensor[] s, float x, float y) {

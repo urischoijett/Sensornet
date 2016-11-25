@@ -27,10 +27,6 @@ public class Sensor {
 	public float getRad(){
 		return radius;
 	}
-	public void setPos(float newPos){
-		xpos = newPos;
-		moved = true;
-	}
 	public boolean wasMoved(){
 		return moved;
 	}

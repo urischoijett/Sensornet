@@ -74,25 +74,35 @@ public class userIO extends JFrame  {
 		c.gridy = 1;
 		contentPane.add(trialField, c);
 		
-		//trialbutton (2,1)
-		final JCheckBox trialBox = new JCheckBox("Trial Mode");
-		c.gridx = 2;
-		c.gridy = 1;
-		contentPane.add(trialBox, c);
-		
-		//Radio buttons (5, 0) & (5, 1)
-		final JRadioButton rigidRadioButton = new JRadioButton("Rigid Coverage");
-		rigidRadioButton.setSelected(true);
-		JRadioButton simpleRadioButton = new JRadioButton("Simple Coverage");
-		ButtonGroup group = new ButtonGroup();
-		group.add(rigidRadioButton);
-		group.add(simpleRadioButton);
+		//Single/trial Radio buttons (5, 0) & (5, 1)
+		final JRadioButton singleRadioButton = new JRadioButton("Single Trial");
+		singleRadioButton.setSelected(true);
+		JRadioButton trialRadioButton = new JRadioButton("Multi Trial");
+		ButtonGroup group1 = new ButtonGroup();
+		group1.add(singleRadioButton);
+		group1.add(trialRadioButton);
 
 		c.gridx = 5;
 		c.gridy = 0;
-		contentPane.add(rigidRadioButton, c);
+		contentPane.add(singleRadioButton, c);
 		
 		c.gridx = 5;
+		c.gridy = 1;
+		contentPane.add(trialRadioButton, c);
+		
+		//Algo Radio buttons (6, 0) & (6, 1)
+		final JRadioButton rigidRadioButton = new JRadioButton("Rigid Coverage");
+		rigidRadioButton.setSelected(true);
+		JRadioButton simpleRadioButton = new JRadioButton("Simple Coverage");
+		ButtonGroup group2 = new ButtonGroup();
+		group2.add(rigidRadioButton);
+		group2.add(simpleRadioButton);
+
+		c.gridx = 6;
+		c.gridy = 0;
+		contentPane.add(rigidRadioButton, c);
+		
+		c.gridx = 6;
 		c.gridy = 1;
 		contentPane.add(simpleRadioButton, c);
 
@@ -108,7 +118,7 @@ public class userIO extends JFrame  {
 		
 		c.gridx = 0;
 		c.gridy = 3;
-		c.gridwidth = 5;
+		c.gridwidth = 6;
 		c.gridheight = 1;
 		c.weighty = 1;
 		c.fill = 1;
@@ -128,7 +138,7 @@ public class userIO extends JFrame  {
 		
 		c.gridx = 0;
 		c.gridy = 5;
-		c.gridwidth = 5;
+		c.gridwidth = 6;
 		c.gridheight = 1;
 		c.weighty = 1;
 		c.fill = 1;
@@ -153,29 +163,32 @@ public class userIO extends JFrame  {
 		contentPane.add(movementTotal, c);
 		
 		
-		//Go Button (4, 0)
+		//Go Button (6, 6)
 		JButton goButton = new JButton("Go!");
 		goButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				goButtonHandler(numField.getText().trim(), radField.getText().trim(), rigidRadioButton.isSelected(), beforePanel, afterPanel, movementTotal);
+				if(singleRadioButton.isSelected()){
+					singleModeHandler(numField.getText().trim(), radField.getText().trim(), rigidRadioButton.isSelected(), beforePanel, afterPanel, movementTotal);
+				} else {
+					multiModeHandler();
+				}
 			}	
 		});
 		c.gridwidth = 1;
 		c.gridheight = 1;
 		c.weighty = 0;
-		c.fill = 0;
-		c.gridx = 4;
-		c.gridy = 0;
+		c.fill = 2;
+		c.gridx = 6;
+		c.gridy = 6;
 		contentPane.add(goButton, c);
 		
-		//Reset Button (4, 1)
+		//Reset Button (6, 5)
 		JButton resetButton = new JButton("Reset");
 		resetButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent c){
 				numField.setText("");
 				radField.setText("");
 				trialField.setText("");
-				trialBox.setSelected(false);
 				beforePanel.clearSensors();
 				afterPanel.clearSensors();
 				
@@ -184,9 +197,10 @@ public class userIO extends JFrame  {
 		c.gridwidth = 1;
 		c.gridheight = 1;
 		c.weighty = 0;
-		c.fill = 0;
-		c.gridx = 4;
-		c.gridy = 1;
+		c.fill = 2;
+		c.gridx = 6;
+		c.gridy = 5;
+		c.anchor  = GridBagConstraints.SOUTH;
 		contentPane.add(resetButton, c);
 
 		
@@ -194,7 +208,8 @@ public class userIO extends JFrame  {
 		setVisible(true);	
 	}
 	
-	public void goButtonHandler(String numSensorsString, String radiusString, boolean rigidCoverage, SensorPanel bPanel, SensorPanel aPanel, JLabel move){
+	//go button handler for single trial
+	private void singleModeHandler(String numSensorsString, String radiusString, boolean rigidCoverage, SensorPanel bPanel, SensorPanel aPanel, JLabel move){
 		  int numSensors; 
 		  float radius;
 		  Sensor[] sList;
@@ -226,6 +241,11 @@ public class userIO extends JFrame  {
 		  aPanel.displaySensors(sList);					//display final positions
 		  move.setText(""+movement);
 	 }
+	
+	//go button handler for multi trial
+	private void multiModeHandler(){
+		
+	}
 	
 	/*
 	public int getNum(){
