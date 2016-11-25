@@ -1,5 +1,3 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -8,10 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Scanner;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -23,11 +20,9 @@ import javax.swing.JTextField;
 
 public class userIO extends JFrame  {
 	
-	
 	private Controller ctrl;
 	private JPanel contentPane;
 	Scanner inputs =  new Scanner(System.in);
-	
 	
 	//constructor
 	public userIO(Controller control){
@@ -49,7 +44,7 @@ public class userIO extends JFrame  {
 		contentPane.add(numText, c);
 		
 		//numberfield(1,0)
-		JTextField numField = new JTextField(10);
+		final JTextField numField = new JTextField(10);
 		c.gridx = 1;
 		c.gridy = 0;
 		contentPane.add(numField, c);
@@ -61,14 +56,32 @@ public class userIO extends JFrame  {
 		contentPane.add(radText, c);
 		
 		//radiusfield(3,0)
-		JTextField radField = new JTextField(10);
+		final JTextField radField = new JTextField(10);
 		c.gridx = 3;
 		c.gridy = 0;
 		contentPane.add(radField, c);
 		
+		//trials text (0, 1)
+		JLabel trialText = new JLabel("Number of Trials: ");
+		c.gridx = 0;
+		c.gridy = 1;
+		c.anchor  = GridBagConstraints.WEST;
+		contentPane.add(trialText, c);
+		
+		//trialfield (1,1)
+		final JTextField trialField = new JTextField(10);
+		c.gridx = 1;
+		c.gridy = 1;
+		contentPane.add(trialField, c);
+		
+		//trialbutton (2,1)
+		final JCheckBox trialBox = new JCheckBox("Trial Mode");
+		c.gridx = 2;
+		c.gridy = 1;
+		contentPane.add(trialBox, c);
 		
 		//Radio buttons (5, 0) & (5, 1)
-		JRadioButton rigidRadioButton = new JRadioButton("Rigid Coverage");
+		final JRadioButton rigidRadioButton = new JRadioButton("Rigid Coverage");
 		rigidRadioButton.setSelected(true);
 		JRadioButton simpleRadioButton = new JRadioButton("Simple Coverage");
 		ButtonGroup group = new ButtonGroup();
@@ -77,7 +90,6 @@ public class userIO extends JFrame  {
 
 		c.gridx = 5;
 		c.gridy = 0;
-		c.anchor  = GridBagConstraints.WEST;
 		contentPane.add(rigidRadioButton, c);
 		
 		c.gridx = 5;
@@ -92,7 +104,7 @@ public class userIO extends JFrame  {
 		
 		
 		//demobar1(0,3)
-		SensorPanel beforePanel = new SensorPanel();
+		final SensorPanel beforePanel = new SensorPanel();
 		
 		c.gridx = 0;
 		c.gridy = 3;
@@ -112,7 +124,7 @@ public class userIO extends JFrame  {
 		contentPane.add(afterText, c);
 		
 		//demobar2(0,5)
-		SensorPanel afterPanel = new SensorPanel();
+		final SensorPanel afterPanel = new SensorPanel();
 		
 		c.gridx = 0;
 		c.gridy = 5;
@@ -122,12 +134,30 @@ public class userIO extends JFrame  {
 		c.fill = 1;
 		contentPane.add(afterPanel, c);
 		
+		//movement label (1,6)
+		JLabel movementText = new JLabel("Total Movement:");
+		c.gridx = 1;
+		c.gridy = 6;
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.weighty = 0.2;
+		contentPane.add(movementText, c);
+		
+		//movement label (1,6)
+		final JLabel movementTotal = new JLabel("");
+		c.gridx = 2;
+		c.gridy = 6;
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.weighty = 0.2;
+		contentPane.add(movementTotal, c);
+		
 		
 		//Go Button (4, 0)
 		JButton goButton = new JButton("Go!");
 		goButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				goButtonHandler(numField.getText().trim(), radField.getText().trim(), rigidRadioButton.isSelected(), beforePanel, afterPanel);
+				goButtonHandler(numField.getText().trim(), radField.getText().trim(), rigidRadioButton.isSelected(), beforePanel, afterPanel, movementTotal);
 			}	
 		});
 		c.gridwidth = 1;
@@ -137,13 +167,38 @@ public class userIO extends JFrame  {
 		c.gridx = 4;
 		c.gridy = 0;
 		contentPane.add(goButton, c);
+		
+		//Reset Button (4, 1)
+		JButton resetButton = new JButton("Reset");
+		resetButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent c){
+				numField.setText("");
+				radField.setText("");
+				trialField.setText("");
+				trialBox.setSelected(false);
+				beforePanel.clearSensors();
+				afterPanel.clearSensors();
+				
+			}	
+		});
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.weighty = 0;
+		c.fill = 0;
+		c.gridx = 4;
+		c.gridy = 1;
+		contentPane.add(resetButton, c);
+
+		
+		
 		setVisible(true);	
 	}
 	
-	 public void goButtonHandler(String numSensorsString, String radiusString, boolean rigidCoverage, SensorPanel bPanel, SensorPanel aPanel){
+	public void goButtonHandler(String numSensorsString, String radiusString, boolean rigidCoverage, SensorPanel bPanel, SensorPanel aPanel, JLabel move){
 		  int numSensors; 
 		  float radius;
 		  Sensor[] sList;
+		  float movement;
 			 
 		  bPanel.clearSensors();
 		  aPanel.clearSensors();
@@ -158,26 +213,21 @@ public class userIO extends JFrame  {
 			  JOptionPane.showMessageDialog(null, errorMessage, "Number format error", JOptionPane.INFORMATION_MESSAGE);
 			  return;
 		  }
-
-		  //create sensors
-		  sList = ctrl.createList(numSensors, radius);
-		  
-		  //display initial positions
-		  bPanel.displaySensors(sList);
-		  
-		  //display final positions
-		  if (rigidCoverage) {
-			  ctrl.rigidCoverage(sList);		  
-		  } else { // simple coverage
-			  ctrl.simpleCoverage(sList);
+	  
+		  sList = ctrl.createList(numSensors, radius);	//create sensors
+		  printSensorPositions(sList);
+		  bPanel.displaySensors(sList); 				//display initial positions
+		  if (rigidCoverage) {							//calculate new positions
+			  movement = ctrl.rigidCoverage(sList);		  
+		  } else { 
+			  movement = ctrl.simpleCoverage(sList);
 		  }
-		  aPanel.displaySensors(sList);
+		  printSensorPositions(sList);
+		  aPanel.displaySensors(sList);					//display final positions
+		  move.setText(""+movement);
 	 }
 	
-	
-	
-	
-	
+	/*
 	public int getNum(){
 		int n 	= -1;
 		//Scanner inputs = new Scanner(System.in);
@@ -207,10 +257,8 @@ public class userIO extends JFrame  {
 		//inputs.close();
 		return r;
 	}
+	*/
 
-	public void displayNet(Sensor[] s){
-
-	}
 
 	public void printSensorPositions(Sensor[]s){
 		for(int i=0; i<s.length; i++) {

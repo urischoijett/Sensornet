@@ -12,107 +12,81 @@ public class Controller {
 			float randPos = (float) Math.random();
 			sensorList[i]  = new Sensor(randPos, rad);
 		}
+		//sort from lowest to highest xpos
+		Arrays.sort(sensorList, new Comparator<Sensor>(){  
+			public int compare(Sensor s1, Sensor s2){  
+		         if (s1.getPos() < s2.getPos()) return -1;
+		         if (s1.getPos() > s2.getPos()) return 1;
+		         return 0;
+		    }  
+		});
 		
 		return sensorList;
 	}
 	
-	public void rigidCoverage (Sensor[] s){
+	public float rigidCoverage (Sensor[] s){
 		float movement 	= 0; 			//total movement
 		float radius 	= s[0].getRad();
-		float newPos	= 0;		
-		
-		//sort from lowest to highest xpos
-		Arrays.sort(s, new Comparator<Sensor>(){  
-			public int compare(Sensor s1, Sensor s2){  
-		         if (s1.getPos() < s2.getPos()) return -1;
-		         if (s1.getPos() > s2.getPos()) return 1;
-		         return 0;
-		    }  
-		});
-		
-		
-		// move sensors
-
+		float newPos	= 0;
+		int toMove		= 0;
+				
 		for(int i=0; i<s.length; i++) {
 			
 			newPos = (radius * (2*(float)i+1));
-			movement+= Math.abs(s[i].getPos() - newPos);
-			
-			System.out.println(s[i].getPos() + ", ");
-			s[i].moveTo(newPos);
-			System.out.println(s[i].getPos() + ", ");
-			
 			if (newPos > 1){
 				//set all remaining to 1?
 				//do something with extras? Like move them all to the right
-				System.out.println(", Movement: "+ movement);
 				break;
 			}
+			toMove = getClosestUnlocked(s, newPos);
+			movement+= Math.abs(s[toMove].getPos() - newPos);
+			s[toMove].moveTo(newPos);
+			s[toMove].lock();
 		}
-	
-	
+		System.out.println("Total Movement: "+ movement);
+		return movement;
 	}
 	
 	
-	public void simpleCoverage (Sensor[] s){
+	public float simpleCoverage (Sensor[] s){
 		//finds and moves the closest sensors possible needed to achieve total coverage ignoring overlap.
-		float movement 		= 0; 			//total movement
-		float radius 		= s[0].getRad();
-		float newPos		= 0;		
-		int lockedCount		= 0;
-		//sort from lowest to highest xpos
-		Arrays.sort(s, new Comparator<Sensor>(){  
-			public int compare(Sensor s1, Sensor s2){  
-		         if (s1.getPos() < s2.getPos()) return -1;
-		         if (s1.getPos() > s2.getPos()) return 1;
-		         return 0;
-		    }  
-		});
-		
-		
-		//locate first sensor
-		int current = 0; //current sensor
-		int next	= 0; //next sensor
-		
+		float movement 	= 0; 			//total movement (return)
+		float radius 	= s[0].getRad();
+		float newPos	= 0;		
+		int current 	= 0; 			
+		int next		= 0; 			
+			
 		//select first sensor
 		current = getClosestUnlocked(s, radius);
 		s[current].moveTo(radius);
 		s[current].lock();
 		
-		//print pre-sort array
-		for(int i=0; i<s.length; i++) {
-			System.out.println("pos "+i+": " + s[i].getPos());
-		}
-		
-		while (s[current].getPos()<=(1-radius)){
-						
-			//find farthest right within 2R 
+		while (s[current].getPos()<(1-radius)){
+			//select next sensor to move/lock			
+			//find farthest right within 2R, if none (next == -1)
 			next = getRightinRange(s, s[current].getPos(), s[current].getPos()+(2*radius));
 			
-			System.out.println("s[current] pos:" + s[current].getPos());
-			
-			if (next > -1){
-				s[next].lock();
-				
-				
-			} else {	//if none, getClosestUnlocked to current.xpos+2r
+			if (next > -1){				//either lock the next best
+				s[next].lock();				
+			} else {					//or find the ideal spot for next
 				newPos = s[current].getPos()+(2*radius);
-				if (newPos>1){ newPos = 1-radius; }
+				if (newPos>1){ 			//if newPos is too far, set to 1
+					newPos = 1-radius;
+				}
 				next = getClosestUnlocked(s, newPos);
-					if (next == -1){
+				
+					if (next == -1){ 	//are we out of sensors?
 						break;
 					}
+					
 				movement+= Math.abs(s[next].getPos() - newPos);
 				s[next].moveTo(newPos);
 				s[next].lock();	
 			}
-			
-			System.out.println("current: " + s[current].getPos());
-			System.out.println("  next: " + s[next].getPos()+ "\n");
 			current = next;
 		}
-		System.out.println("movement: "+movement);
-		
+		System.out.println("Total Movement: "+ movement);
+		return movement;
 	
 	
 	}
@@ -142,8 +116,8 @@ public class Controller {
 		for (int i=0; i<s.length; i++){
 			d = Math.abs(s[i].getPos() - x);
 			if (d < minD && !s[i].isLocked()){ //is closer and unlocked
-				minD = d;
-				winner = i;
+				minD 	= d;
+				winner 	= i;
 			}
 		}
 		

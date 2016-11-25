@@ -23,10 +23,7 @@ public class SensorPanel extends JPanel{
 		//draw base line
 		Graphics2D g2 = (Graphics2D) g;
 		Line2D lineOne = new Line2D.Float(0, this.getHeight()/2, this.getWidth(), this.getHeight()/2); 
-		g2.draw(lineOne);
-		System.out.println("width: " + this.getWidth()+ " height: "+ this.getHeight());
-		
-		
+		g2.draw(lineOne);		
 	}
 	
 	//
