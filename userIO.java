@@ -1,14 +1,15 @@
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Scanner;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,18 +19,19 @@ import javax.swing.JTextField;
 
 
 
+@SuppressWarnings("serial")
 public class userIO extends JFrame  {
 	
 	private Controller ctrl;
 	private JPanel contentPane;
-	Scanner inputs =  new Scanner(System.in);
+
 	
-	//constructor
+	//constructor, sets up main window
 	public userIO(Controller control){
 		ctrl = control;
 		setResizable(false);
-		setSize(new Dimension(800, 600));	
-//		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setSize(new Dimension(800, 600));
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		//gridbag start
 		contentPane = new JPanel(new GridBagLayout());
@@ -39,6 +41,8 @@ public class userIO extends JFrame  {
 		//Numbertext (0,0)
 		JLabel numText = new JLabel("Number of Sensors: ");
 		c.insets = new Insets(10, 10, 10, 10);
+		c.weightx = 1;
+		c.anchor  = GridBagConstraints.WEST;
 		c.gridx = 0;
 		c.gridy = 0;
 		contentPane.add(numText, c);
@@ -47,6 +51,7 @@ public class userIO extends JFrame  {
 		final JTextField numField = new JTextField(10);
 		c.gridx = 1;
 		c.gridy = 0;
+		c.fill = 2;
 		contentPane.add(numField, c);
 		
 		//radiustext(2,0)
@@ -65,7 +70,7 @@ public class userIO extends JFrame  {
 		JLabel trialText = new JLabel("Number of Trials: ");
 		c.gridx = 0;
 		c.gridy = 1;
-		c.anchor  = GridBagConstraints.WEST;
+		
 		contentPane.add(trialText, c);
 		
 		//trialfield (1,1)
@@ -74,42 +79,51 @@ public class userIO extends JFrame  {
 		c.gridy = 1;
 		contentPane.add(trialField, c);
 		
-		//Single/trial Radio buttons (5, 0) & (5, 1)
-		final JRadioButton singleRadioButton = new JRadioButton("Single Trial");
-		singleRadioButton.setSelected(true);
-		JRadioButton trialRadioButton = new JRadioButton("Multi Trial");
-		ButtonGroup group1 = new ButtonGroup();
-		group1.add(singleRadioButton);
-		group1.add(trialRadioButton);
-
-		c.gridx = 5;
-		c.gridy = 0;
-		contentPane.add(singleRadioButton, c);
-		
-		c.gridx = 5;
-		c.gridy = 1;
-		contentPane.add(trialRadioButton, c);
-		
-		//Algo Radio buttons (6, 0) & (6, 1)
+		//Algo Radio buttons (6, 0)
 		final JRadioButton rigidRadioButton = new JRadioButton("Rigid Coverage");
 		rigidRadioButton.setSelected(true);
 		JRadioButton simpleRadioButton = new JRadioButton("Simple Coverage");
 		ButtonGroup group2 = new ButtonGroup();
 		group2.add(rigidRadioButton);
 		group2.add(simpleRadioButton);
-
-		c.gridx = 6;
-		c.gridy = 0;
-		contentPane.add(rigidRadioButton, c);
+		
+		Box algoRadio = Box.createVerticalBox();
+		algoRadio.add(rigidRadioButton);
+		algoRadio.add(simpleRadioButton);
+		algoRadio.setBorder(BorderFactory.createEtchedBorder());
 		
 		c.gridx = 6;
-		c.gridy = 1;
-		contentPane.add(simpleRadioButton, c);
-
+		c.gridy = 0;
+		c.gridheight = 2;
+		
+		contentPane.add(algoRadio, c);
+		
+		//Single/trial Radio buttons (6, 2)
+		final JRadioButton singleRadioButton = new JRadioButton("Single Trial");
+		singleRadioButton.setSelected(true);
+		JRadioButton trialRadioButton = new JRadioButton("Multi Trial");
+		ButtonGroup group1 = new ButtonGroup();
+		group1.add(singleRadioButton);
+		group1.add(trialRadioButton);
+		
+		Box trialRadio = Box.createVerticalBox();
+		trialRadio.add(singleRadioButton);
+		trialRadio.add(trialRadioButton);
+		trialRadio.setBorder(BorderFactory.createEtchedBorder());
+		
+		c.gridx = 6;
+		c.gridy = 2;
+		c.gridheight = 2;
+		c.anchor = GridBagConstraints.NORTH;
+		contentPane.add(trialRadio, c);
+		
+		
 		//bar1text(1,2)
 		JLabel beforeText = new JLabel("Before:");
 		c.gridx = 0;
 		c.gridy = 2;
+		c.gridheight = 1;
+		c.anchor  = GridBagConstraints.WEST;
 		contentPane.add(beforeText, c);
 		
 		
@@ -216,12 +230,18 @@ public class userIO extends JFrame  {
 		setVisible(true);	
 	}
 	
-	//go button handler for single trial
+	/* Function - singleModeHandler
+	 * In: 		current UI state
+	 * Out: 	void
+	 * Other: 	called when go button pressed with [single trial] selected, runs the trial with selected parameters and 
+	 * 			displays the before/after results on the top/bottom SensorPanels and total movement at the bottom
+	 */
 	private void singleModeHandler(String numSensorsString, String radiusString, boolean rigidCoverage, SensorPanel bPanel, SensorPanel aPanel, JLabel move){
-		  int numSensors; 
-		  float radius;
-		  Sensor[] sList;
-		  float movement;
+		  int 		numSensors; 
+		  float 	radius;
+		  Sensor[] 	sList;
+		  float 	movement;
+		  String 	errorMessage = "Number of sensors must be an int > 0, radius must be a decimal > 0";
 		  
 		  //error handling for user input 
 		  try {
@@ -229,30 +249,39 @@ public class userIO extends JFrame  {
 			  radius = Float.parseFloat(radiusString);
 		  }
 		  catch(NumberFormatException e) {
-			  String errorMessage = "Please enter a valid number for both the radius and the number of sensors";
 			  JOptionPane.showMessageDialog(null, errorMessage, "Number format error", JOptionPane.INFORMATION_MESSAGE);
 			  return;
 		  }
-	  
+		  if (numSensors <= 0 || radius <= 0){
+				JOptionPane.showMessageDialog(null, errorMessage, "Number format error", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
+		  
 		  sList = ctrl.createList(numSensors, radius);	//create sensors
-		  printSensorPositions(sList);
+		  //printSensorPositions(sList);
 		  bPanel.displaySensors(sList); 				//display initial positions
 		  if (rigidCoverage) {							//calculate new positions
 			  movement = ctrl.rigidCoverage(sList);		  
 		  } else { 
 			  movement = ctrl.simpleCoverage(sList);
 		  }
-		  printSensorPositions(sList);
+		  //printSensorPositions(sList);
 		  aPanel.displaySensors(sList);					//display final positions
 		  move.setText(""+movement);
 	 }
 	
-	//go button handler for multi trial
+	/* Function - multiModeHandler
+	 * In: 		current UI state
+	 * Out: 	void
+	 * Other: 	called when go button pressed with [multi trial] selected, runs the selected trial the
+	 * 			specified number of times then displays average movement at the bottom
+	 */
 	private void multiModeHandler(String numSensorsString, String radiusString, String trialString, boolean rigidCoverage, JLabel moveText){
 		int 	numSensors; 
 		float 	radius;
 		int 	numTrials;
 		float	movement;
+		String  errorMessage = "Number of sensors/trials must be an int > 0, radius must be a decimal > 0";
 		
 		try {
 			  numSensors 	= Integer.parseInt(numSensorsString);
@@ -260,54 +289,17 @@ public class userIO extends JFrame  {
 			  numTrials		= Integer.parseInt(trialString);
 		}
 		catch(NumberFormatException e) {
-			  String errorMessage = "Please enter a valid number for both the radius and the number of sensors";
 			  JOptionPane.showMessageDialog(null, errorMessage, "Number format error", JOptionPane.INFORMATION_MESSAGE);
 			  return;
 		}
-		 						
+		if (numSensors <= 0 || radius <= 0 || numTrials <= 0){
+			JOptionPane.showMessageDialog(null, errorMessage, "Number format error", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
 		movement = ctrl.trials(numSensors, radius, numTrials, rigidCoverage);
 		moveText.setText(""+movement);
 
 	}
-	
-	/*
-	public int getNum(){
-		int n 	= -1;
-		//Scanner inputs = new Scanner(System.in);
-		
-		System.out.println("How many sensors?(1-999)");
-		n = inputs.nextInt();
-		
-		while (n<1 || n > 999){
-			System.out.println("try again, idiot");
-			n = inputs.nextInt();
-		}
-		//inputs.close();
-		return n;
-	}
-	
-	public float getRad(){
-		float r 	= -1;
-		//Scanner inputs = new Scanner(System.in);
-		
-		System.out.println("How much radius?(0<r<1)");
-		r = inputs.nextFloat();
-		
-		while (r <= 0 || r >= 1){
-			System.out.println("try again, idiot");
-			r = inputs.nextFloat();
-		}
-		//inputs.close();
-		return r;
-	}
-	*/
 
-
-	public void printSensorPositions(Sensor[]s){
-		for(int i=0; i<s.length; i++) {
-			System.out.println("pos "+i+": " + s[i].getPos());
-		}
-	}
 	
-	
-}
+};

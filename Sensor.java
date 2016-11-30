@@ -1,10 +1,10 @@
 
 public class Sensor {
 	
-	private float 	xpos;
-	private float 	radius;
-	private boolean locked = false;
-	private boolean moved = false;
+	private float 	xpos;				//current position within area
+	private float 	radius;				//radius of sensors
+	private boolean locked = false;		//can the sensor be moved
+	private boolean moved = false;		//has the sensor been moved
 	
 	Sensor(float x, float r){
 		xpos 	= x;
@@ -13,9 +13,6 @@ public class Sensor {
 	
 	public void lock () {
 		locked = true;
-	}
-	public void unlock(){
-		locked = false;
 	}
 	public void moveTo(float x){
 		xpos = x;
@@ -35,4 +32,4 @@ public class Sensor {
 	}
 	
 	
-}
+};

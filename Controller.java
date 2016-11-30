@@ -2,17 +2,23 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class Controller {
-	static Sensor[] sensorList;
+	static Sensor[] sensorList;		//placeholder
 	
+	
+	/*	Function - createList
+	 * 	In: 	number of sensors, radius
+	 *  Out: 	Sorted list of sensors
+	 *  Other: 	creates a list of sensors length numSensors with given radius and a random position
+	 *  		in the area. The sensors are sorted by xpos	from lowest to highest
+	 */
 	public Sensor[] createList(int numSensors, float rad){
-
-		//create list of sensors and randomize positions
+		//Create the list 
 		sensorList = new Sensor[numSensors];
 		for (int i=0; i<numSensors; i++) {
 			float randPos = (float) Math.random();
 			sensorList[i]  = new Sensor(randPos, rad);
 		}
-		//sort from lowest to highest xpos
+		//Sort it
 		Arrays.sort(sensorList, new Comparator<Sensor>(){  
 			public int compare(Sensor s1, Sensor s2){  
 		         if (s1.getPos() < s2.getPos()) return -1;
@@ -20,75 +26,85 @@ public class Controller {
 		         return 0;
 		    }  
 		});
-		
 		return sensorList;
 	}
 	
+	
+	/*	Function - rigidCoverage
+	 * 	In: 	List of sensors
+	 *  Out: 	Total movement of sensors
+	 *  Other: 	rigidCoverage finds the minimum positions to completely cover the area
+	 *  		and then moves the closest unlocked sensor to each of those positions
+	 */
 	public float rigidCoverage (Sensor[] s){
-		float movement 	= 0; 			//total movement
-		float radius 	= s[0].getRad();
-		float newPos	= 0;
-		int toMove		= 0;
+		float movement 	= 0; 				//sum total movement
+		float radius 	= s[0].getRad();	//radius of sensors
+		float newPos	= 0;				//next sensor destination
+		int toMove		= 0;				//sensor that will move
 				
 		for(int i=0; i<s.length; i++) {
-			
 			newPos = (radius * (2*(float)i+1));
 			if (newPos > 1){
-				//set all remaining to 1?
-				//do something with extras? Like move them all to the right
-				break;
+				break;											//break when end of area is reached
 			}
-			toMove = getClosestUnlocked(s, newPos);
-			movement+= Math.abs(s[toMove].getPos() - newPos);
-			s[toMove].moveTo(newPos);
-			s[toMove].lock();
+			toMove = getClosestUnlocked(s, newPos);				//select sensor
+			movement+= Math.abs(s[toMove].getPos() - newPos);	//track movement
+			s[toMove].moveTo(newPos);							//move sensor
+			s[toMove].lock();									//lock it in place
 		}
-		System.out.println("Total Movement: "+ movement);
-		return movement;
+		return movement;										//return total movement
 	}
 		
+	
+	/*	Function - simpleCoverage
+	 * 	In: 	List of sensors
+	 *  Out: 	Total movement of sensors
+	 *  Other: 	simpleCoverage scans from left to right until it finds an area uncovered by sensors
+	 *  		when it finds a gap, it moves the closest available sensor to the optimal position
+	 */
 	public float simpleCoverage (Sensor[] s){
-		//finds and moves the closest sensors possible needed to achieve total coverage ignoring overlap.
-		float movement 	= 0; 			//total movement (return)
-		float radius 	= s[0].getRad();
-		float newPos	= 0;		
-		int current 	= 0; 			
-		int next		= 0; 			
+		float movement 	= 0; 				//sum total movement
+		float radius 	= s[0].getRad();	//radius of sensors
+		float newPos	= 0;				//next sensor destination
+		int current 	= 0; 				//current sensor id
+		int next		= 0; 				//next sensor id
 			
 		//select first sensor
 		current = getClosestUnlocked(s, radius);
 		s[current].moveTo(radius);
 		s[current].lock();
 		
+		//scan to the right until we reach the end
 		while (s[current].getPos()<(1-radius)){
-			//select next sensor to move/lock			
-			//find farthest right within 2R, if none (next == -1)
 			next = getRightinRange(s, s[current].getPos(), s[current].getPos()+(2*radius));
-			
-			if (next > -1){				//either lock the next best
-				s[next].lock();				
-			} else {					//or find the ideal spot for next
+			if (next > -1){			//either lock the next best
+				s[next].lock();			
+			} else {				//or find the ideal spot for next
 				newPos = s[current].getPos()+(2*radius);
-				if (newPos>1){ 			//if newPos is too far, set to 1
+				if (newPos>1){ 		//if newPos is too far, set to 1
 					newPos = 1-radius;
 				}
 				next = getClosestUnlocked(s, newPos);
-				if (next == -1){ 		//are we out of sensors?
+				if (next == -1){ 	//are we out of sensors?
 						break;
 					}
 					
-				movement+= Math.abs(s[next].getPos() - newPos);
-				s[next].moveTo(newPos);
-				s[next].lock();	
+				movement+= Math.abs(s[next].getPos() - newPos);	//track movement
+				s[next].moveTo(newPos);							//move sensor
+				s[next].lock();									//lock it in place
 			}
 			current = next;
 		}
-		System.out.println("Total Movement: "+ movement);
 		return movement;
-	
-	
 	}
+
 	
+	/*	Function - trials
+	 *  In:		number of sensors, radius, number of trials, coverage algorithm to use
+	 *  Out:	Average movement of sensors over given number of trials
+	 *  Other:	Runs the chosen algorithm n times and sums the total movement
+	 *  		return total movement divided by n. 
+	 */
 	public float trials (int numSensors, float rad, int numTrials, boolean rigid){
 		float totalMovement =0;
 		Sensor[] sList;
@@ -104,14 +120,19 @@ public class Controller {
 		return (totalMovement/numTrials);
 	}
 	
-	//helper 1
-	public int getRightinRange(Sensor[] s, float x, float y) {
+	
+	/*	Function - getRightinRange
+	 * 	In:		sensor list, left bound, right bound
+	 * 	Out:	id of rightmost sensor in bounds
+	 *  Other:	helper function for simpleCoverage
+	 */
+	public int getRightinRange(Sensor[] s, float x1, float x2) {
 		int result 		= -1;
 		float pos		=  0;
 		
 		for (int i=0; i<s.length; i++){
 			pos = s[i].getPos();
-			if((pos > x) && (pos<=y)){
+			if((pos > x1) && (pos<=x2)){
 				result = i;
 			}
 		}
@@ -119,7 +140,12 @@ public class Controller {
 		return result;
 	}
 	
-	//helper 2
+	
+	/*	Function - getClosestUnlocked
+	 * 	In:		sensor list, x-position
+	 * 	Out:	id of closest unlocked sensor to x 
+	 *  Other:	helper function for rigidCoverage & simpleCoverage
+	 */
 	public int getClosestUnlocked(Sensor[] s, float x) {
 		int winner 	= -1;
 		float minD 	=  1;
@@ -137,4 +163,4 @@ public class Controller {
 	}
 	
 	
-}
+};
