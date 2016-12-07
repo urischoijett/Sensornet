@@ -40,17 +40,21 @@ public class Controller {
 		float movement 	= 0; 				//sum total movement
 		float radius 	= s[0].getRad();	//radius of sensors
 		float newPos	= 0;				//next sensor destination
-		int toMove		= 0;				//sensor that will move
+		int   toMove	= 0;				//sensor that will move
 				
 		for(int i=0; i<s.length; i++) {
 			newPos = (radius * (2*(float)i+1));
-			if (newPos > 1){
-				break;											//break when end of area is reached
-			}
+			if (newPos > 1-radius){	 newPos = 1-radius; }		//covers an edge case
+				
 			toMove = getClosestUnlocked(s, newPos);				//select sensor
 			movement+= Math.abs(s[toMove].getPos() - newPos);	//track movement
 			s[toMove].moveTo(newPos);							//move sensor
 			s[toMove].lock();									//lock it in place
+			
+			if (newPos >= 1-radius){
+				break; 											//break when end of area is reached
+			}
+			
 		}
 		return movement;										//return total movement
 	}
@@ -87,7 +91,7 @@ public class Controller {
 				next = getClosestUnlocked(s, newPos);
 				if (next == -1){ 	//are we out of sensors?
 						break;
-					}
+				}
 					
 				movement+= Math.abs(s[next].getPos() - newPos);	//track movement
 				s[next].moveTo(newPos);							//move sensor
