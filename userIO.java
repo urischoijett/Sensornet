@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -241,7 +240,7 @@ public class userIO extends JFrame  {
 		  float 	radius;
 		  Sensor[] 	sList;
 		  float 	movement;
-		  String 	errorMessage = "Number of sensors must be an int > 0, radius must be a decimal > 0";
+		  String 	errorMessage = "Number of sensors must be an int > 0, radius must be a decimal between 0 and 1";
 		  
 		  //error handling for user input 
 		  try {
@@ -252,7 +251,7 @@ public class userIO extends JFrame  {
 			  JOptionPane.showMessageDialog(null, errorMessage, "Number format error", JOptionPane.INFORMATION_MESSAGE);
 			  return;
 		  }
-		  if (numSensors <= 0 || radius <= 0){
+		  if (numSensors <= 0 || (radius <= 0 || radius > 1)){
 				JOptionPane.showMessageDialog(null, errorMessage, "Number format error", JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
